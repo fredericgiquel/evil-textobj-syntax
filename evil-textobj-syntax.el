@@ -36,9 +36,10 @@
          (face (get-text-property pos 'face)))
     (unless (keywordp (car-safe face)) (list face))))
 
-(defun evil-textobj-syntax--whitespacep (c)
-  "This function returns t if c is white spaces, nil otherwise."
-  (= 32 (char-syntax c)))
+(defun evil-textobj-syntax--whitespace-or-newlinep (c)
+  "This function returns t if c is white space or newline, nil otherwise."
+  (or (= 32 (char-syntax c))
+      (eq c ?\n)))
 
 (defun evil-textobj-syntax--create-range (&optional inclusive)
   (let ((point-face (evil-textobj-syntax--what-face))
@@ -56,7 +57,7 @@
         (while (and continue (>= (- (point) 1) (point-min)))
           (backward-char)
           (let ((backward-point-face (evil-textobj-syntax--what-face)))
-            (if (evil-textobj-syntax--whitespacep (char-after))
+            (if (evil-textobj-syntax--whitespace-or-newlinep (char-after))
                 (setq backward-point (point))
               (if (equal point-face backward-point-face)
                   (progn (setq backward-point (point))
@@ -70,7 +71,7 @@
         (while (and continue (< (+ (point) 1) (point-max)))
           (forward-char)
           (let ((forward-point-face (evil-textobj-syntax--what-face)))
-            (if (evil-textobj-syntax--whitespacep (char-after))
+            (if (evil-textobj-syntax--whitespace-or-newlinep (char-after))
                 (setq forward-point (point))
               (if (equal point-face forward-point-face)
                   (progn (setq forward-point (point))
